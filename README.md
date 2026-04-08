@@ -1,4 +1,4 @@
-# 미니SQL 프로젝트
+﻿# 미니SQL 프로젝트
 
 SQL 형태의 쿼리를 입력받아 CSV 파일로 데이터를 저장하고 조회하는 C 언어 기반 미니 데이터베이스 프로젝트.
 
@@ -6,7 +6,7 @@ SQL 형태의 쿼리를 입력받아 CSV 파일로 데이터를 저장하고 조
 
 ## 실행 방법
 
-```
+```text
 miniSQL> SELECT name FROM table;
 miniSQL> SELECT * FROM table WHERE id > 1;
 miniSQL> INSERT 1, 'hong123', 'Hong', 'pass1234', '2026-04-08 18:30:00';
@@ -62,7 +62,7 @@ miniSQL> EXIT
 
 ## 프로젝트 구조
 
-```
+```text
 ├── main.c        입력 루프, 쿼리 라우팅
 ├── parser.c      문자열 파싱, 쿼리 구조체 생성
 ├── parser.h
@@ -79,29 +79,17 @@ miniSQL> EXIT
 
 ## 실행 흐름
 
-```
-사용자 입력
-    │
-    ▼
-main.c       read_query_input()     여러 줄 입력 합치기, ; 감지
-    │
-    ▼
-parser.c     parse_query()          ; 제거 → 커맨드 추출 → 페이로드 분리
-    │
-    ├── SELECT → parse_select_payload()   FROM / WHERE 파싱
-    │
-    └── INSERT → split_items()            콤마 기준 값 분리
-                     │
-                     ▼
-              parse_insert_command()      타입 판별 (STRING / INTEGER / BOOLEAN)
-    │
-    ▼
-storage.c
-    ├── SELECT → execute_select_query()   CSV 읽기 → WHERE 필터 → 출력
-    └── INSERT → append_insert_to_csv()   CSV 파일에 한 줄 추가
-    │
-    ▼
-printer.c    print_query()          파싱 결과 콘솔 출력
+```mermaid
+flowchart TD
+    A["사용자 입력"] --> B["main.c\nread_query_input()\n여러 줄 입력 합치기, ; 감지"]
+    B --> C["parser.c\nparse_query()\n; 제거, 커맨드 추출, 페이로드 분리"]
+    C --> D["SELECT\nparse_select_payload()\nFROM / WHERE 파싱"]
+    C --> E["INSERT\nsplit_items()\n콤마 기준 값 분리"]
+    E --> F["parse_insert_command()\n타입 판별\nSTRING / INTEGER / BOOLEAN"]
+    D --> G["storage.c\nexecute_select_query()\nCSV 읽기, WHERE 필터, 결과 출력"]
+    F --> H["storage.c\nappend_insert_to_csv()\nCSV 파일에 한 줄 추가"]
+    G --> I["printer.c\nprint_query()\n파싱 결과 콘솔 출력"]
+    H --> I
 ```
 
 ---
